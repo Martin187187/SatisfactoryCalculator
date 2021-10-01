@@ -8,11 +8,9 @@ import org.json.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
-public class ModelLoader {
+public class GameLoader {
 
     private final String NATIVE_CLASS = "NativeClass";
     private final String CLASSES = "Classes";
@@ -20,6 +18,7 @@ public class ModelLoader {
     private final String CLASS_NAME = "ClassName";
     private final String NAME = "mDisplayName";
     private final String DESCRIPTION = "mDescription";
+    private final String SINK_POINTS = "mResourceSinkPoints";
     private final String INGREDIENTS = "mIngredients";
     private final String PRODUCTS = "mProduct";
     private final String DURATION = "mManufactoringDuration";
@@ -28,13 +27,14 @@ public class ModelLoader {
     private final String POWER_CONSUMPTION = "mPowerConsumption";
     private final String POWER_CONSUMPTION_EXPONENT = "mPowerConsumptionExponent";
 
+
     private JSONArray jsonfile;
 
     private List<Building> buildingList;
     private List<Item> itemList;
     private List<Recipe> recipeList;
 
-    public ModelLoader(String filepath){
+    public GameLoader(String filepath){
 
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(filepath).getPath());
@@ -85,6 +85,7 @@ public class ModelLoader {
         collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGResourceDescriptor'")).getJSONArray(CLASSES));
         collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGItemDescriptorNuclearFuel'")).getJSONArray(CLASSES));
         collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGConsumableEquipment'")).getJSONArray(CLASSES));
+        collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGItemDescriptorBiomass'")).getJSONArray(CLASSES));
     }
 
     private void collectItem(JSONArray arr) {
@@ -94,11 +95,15 @@ public class ModelLoader {
             String classname = obj.getString(CLASS_NAME);
             String name = null;
             String description = null;
+            int sinkPoints = 0;
             if(obj.has(NAME))
                 name = obj.getString(NAME);
             if(obj.has(DESCRIPTION))
                 description = obj.getString(DESCRIPTION);
-            Item item = new Item(classname, name, description);
+            if(obj.has(SINK_POINTS))
+                sinkPoints = obj.getInt(SINK_POINTS);
+
+            Item item = new Item(classname, name, description, sinkPoints);
             itemList.add(item);
         }
     }

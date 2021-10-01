@@ -1,30 +1,47 @@
 package model;
 
+import org.json.JSONObject;
+
 import java.util.Objects;
 
-public class Item {
-
-    private String className;
-    private String name;
+public class Item extends Entity  {
 
     private String description;
+    private float sinkPoints;
 
-    public Item(String className, String name, String description) {
-        this.className = className;
-        this.name = name;
+    public Item(String className, String name, String description, int sinkPoints) {
+        super(className, name);
         this.description = description;
+        this.sinkPoints = sinkPoints;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public String getName() {
-        return name;
+    public boolean isRawMaterial(){
+        return className.equals("Desc_Stone_C")||
+                className.equals("Desc_OreIron_C")||
+                className.equals("Desc_OreCopper_C")||
+                className.equals("Desc_OreGold_C")||
+                className.equals("Desc_Coal_C")||
+                className.equals("Desc_RawQuartz_C")||
+                className.equals("Desc_Sulfur_C")||
+                className.equals("Desc_OreBauxite_C")||
+                className.equals("Desc_SAM_C")||
+                className.equals("Desc_OreUranium_C")||
+                className.equals("Desc_Water_C")||
+                className.equals("Desc_LiquidOil_C")||
+                className.equals("Desc_LiquidBiofuel_C")||
+                className.equals("Desc_NitrogenGas_C");
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public float getSinkPoints() {
+        return sinkPoints;
+    }
+
+    public void setSinkPoints(float sinkPoints) {
+        this.sinkPoints = sinkPoints;
     }
 
     @Override
@@ -43,8 +60,20 @@ public class Item {
     @Override
     public String toString() {
         return "Item{" +
-                "name='" + name + '\'' +
+                "className='" + className + '\'' +
+                ", name='" + name + '\'' +
+                ", sinkPoints=" + sinkPoints +
                 '}';
+    }
+
+    @Override
+    public String toJSONString() {
+        JSONObject obj = new JSONObject();
+        obj.put("className", className);
+        obj.put("name", name);
+        obj.put("description", description);
+        obj.put("sinkPoints", sinkPoints);
+        return obj.toString();
     }
 
     public static class AmountOfItems{

@@ -1,50 +1,50 @@
 package model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class Recipe {
+import java.util.*;
 
-    private String id;
-    private String name;
+public class Recipe extends Entity {
 
-    private Map<Item, Integer> ingredients;
-    private Map<Item, Integer> products;
+
+    private List<Pair<Item, Integer>> ingredients;
+    private List<Pair<Item, Integer>> products;
     private float duration;
 
     private Building producedIn;
 
-    public Recipe(String id, String name, float duration, Building producedIn) {
-        this.id = id;
-        this.name = name;
+    public Recipe(String className, String name, float duration, Building producedIn) {
+        super(className, name);
         this.duration = duration;
         this.producedIn = producedIn;
-        this.ingredients = new HashMap<>();
-        this.products = new HashMap<>();
+        this.ingredients = new LinkedList<>();
+        this.products = new LinkedList<>();
+    }
+
+    public boolean isRawMaterial(){
+        return (ingredients.size()==1 && products.size()==1 &&
+                ingredients.get(0).getKey().equals(products.get(0).getKey())) ||
+                products.get(0).getKey().getClassName().equals("Desc_Water_C")||
+                products.get(0).getKey().getClassName().equals("Desc_HeavyOilResidue_C")||
+                products.get(0).getKey().getClassName().equals("Desc_LiquidOil_C");
     }
 
     public void addIngredient(Item item, Integer amount){
-        ingredients.put(item, amount);
+        ingredients.add(new ImmutablePair<>(item, amount));
     }
 
     public void addProduct(Item item, Integer amount){
-        products.put(item, amount);
+        products.add(new ImmutablePair<>(item, amount));
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Map<Item, Integer> getIngredients() {
+    public List<Pair<Item, Integer>> getIngredients() {
         return ingredients;
     }
 
-    public Map<Item, Integer> getProducts() {
+    public List<Pair<Item, Integer>> getProducts() {
         return products;
     }
 
@@ -63,6 +63,35 @@ public class Recipe {
                 ", ingredients=" + ingredients.toString()+
                 ", products=" + products.toString() +
                 ", duration=" + duration +
-                "}\n";
+                "}";
+    }
+
+
+    @Override
+    public String toJSONString() {
+        JSONObject obj = new JSONObject();
+        obj.put("id", className);
+        obj.put("name", name);
+        obj.put("duration", duration);
+        obj.put("producedIn", producedIn.toJSONString());
+
+        JSONArray ingArray = new JSONArray();
+        for(Pair<Item, Integer> pair: ingredients){
+            JSONObject ing = new JSONObject();
+            ing.put("item", pair.getKey().toJSONString());
+            ing.put("amount", pair.getValue());
+            ingArray.put(ing);
+        }
+        obj.put("ingredients", ingArray);
+
+        JSONArray proArray = new JSONArray();
+        for(Pair<Item, Integer> pair: ingredients){
+            JSONObject pro = new JSONObject();
+            pro.put("item", pair.getKey().toJSONString());
+            pro.put("amount", pair.getValue());
+            proArray.put(pro);
+        }
+        obj.put("products", proArray);
+        return obj.toString();
     }
 }
