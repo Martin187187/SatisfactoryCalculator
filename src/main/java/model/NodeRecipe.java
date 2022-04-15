@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class NodeRecipe {
 
@@ -17,6 +18,10 @@ public class NodeRecipe {
         this.item = item;
         this.parent = parent;
         this.leafList = new LinkedList<>();
+    }
+
+    public Pair<Item, Integer> getItem() {
+        return item;
     }
 
     public NodeRecipe(Recipe recipe){
@@ -66,6 +71,20 @@ public class NodeRecipe {
         }
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NodeRecipe)) return false;
+        NodeRecipe that = (NodeRecipe) o;
+        return item.getLeft().equals(that.item.getLeft());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item);
+    }
+
     @Override
     public NodeRecipe clone() {
 

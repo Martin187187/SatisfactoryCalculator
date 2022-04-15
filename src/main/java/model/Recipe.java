@@ -32,6 +32,9 @@ public class Recipe extends Entity {
                 products.get(0).getKey().getClassName().equals("Desc_LiquidOil_C");
     }
 
+    public float scaleToProduct(Item item){
+        return 1;
+    }
     public void addIngredient(Item item, Integer amount){
         ingredients.add(new ImmutablePair<>(item, amount));
     }

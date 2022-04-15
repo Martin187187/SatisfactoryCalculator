@@ -2,7 +2,10 @@ package model;
 
 import org.json.JSONObject;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class Item extends Entity  {
 
@@ -13,7 +16,9 @@ public class Item extends Entity  {
         super(className, name);
         this.description = description;
         this.sinkPoints = sinkPoints;
+
     }
+
 
     public boolean isRawMaterial(){
         return className.equals("Desc_Stone_C")||

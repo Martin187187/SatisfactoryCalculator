@@ -24,7 +24,7 @@ public class Main {
         Item item3 = new Item("Desc_SpaceElevatorPart_8_C", null, null, 1);
         printData(item3, controller);
 
-        Item item4 = new Item("Desc_SpaceElevatorPart_9_C", null, null, 1);
+        Item item4 = new Item("Desc_Rubber_C", null, null, 1);
         printData(item4, controller);
 
 

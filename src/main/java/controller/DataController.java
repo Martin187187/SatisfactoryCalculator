@@ -1,17 +1,12 @@
 package controller;
 
-import model.Item;
-import model.NodeItem;
-import model.NodeRecipe;
-import model.Recipe;
+import model.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Node;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataController {
 
@@ -45,9 +40,86 @@ public class DataController {
         nitricAcid.setSinkPoints(nitricAcid.getSinkPoints() / 1000);
         Item nitrogenGas = itemList.stream().filter(x -> x.getClassName().equals("Desc_NitrogenGas_C")).findFirst().get();
         nitrogenGas.setSinkPoints(nitrogenGas.getSinkPoints() / 1000);
+    }
+
+
+    public List<NetworkNode> createNetworkNodes(){
+
+        List<NetworkNode> result = new LinkedList<>();
+        for(Item item: itemList){
+            NetworkNode node = new NetworkNode(item);
+            List<Recipe> recipesOfItem = getListOfRecipesProducts(item);
+
+            for(Recipe recipe: recipeList){
+
+                if(recipesOfItem.contains(recipe)){
+                    node.addRecipe(recipe);
+                }
+            }
+            node.calculateWeights();
+            result.add(node);
+
+        }
+        return result;
 
     }
 
+    public List<Pair<Item, Float>> getRawItems(){
+        List<Pair<Item, Float>> result = new LinkedList<>();
+
+        for(Item item: itemList){
+            switch (item.getClassName()){
+                case "Desc_Stone_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_OreIron_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_OreCopper_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_OreGold_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_Coal_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_RawQuartz_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_Sulfur_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_OreBauxite_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_SAM_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_OreUranium_C":
+                    result.add(new ImmutablePair<>(item, 1000f));
+                    break;
+                case "Desc_Water_C":
+                    result.add(new ImmutablePair<>(item, 10000000f));
+                    break;
+                case "Desc_LiquidOil_C":
+                    result.add(new ImmutablePair<>(item, 1000000f));
+                    break;
+                case "Desc_LiquidBiofuel_C":
+                    result.add(new ImmutablePair<>(item, 1000000f));
+                    break;
+                case "Desc_NitrogenGas_C":
+                    result.add(new ImmutablePair<>(item, 1000000f));
+                    break;
+                case "Desc_FluidCanister_C":
+                    result.add(new ImmutablePair<>(item, 100000000f));
+                    break;
+
+            }
+        }
+
+        return result;
+    }
     public Pair<Map<Item, Float>, Pair<NodeRecipe, Float>> getRawItems(Item item) {
         return getRawItemsRec(new NodeItem(item, null), 1, getListOfRecipesProducts(item));
     }
@@ -112,25 +184,43 @@ public class DataController {
         return new ImmutablePair<>(hashMap, new ImmutablePair<>(bestRecipe, bestValue));
     }
 
-    public NodeRecipe getListOfAllRecipies(NodeRecipe nodeRecipe) {
+    public List<NodeRecipe> getListOfAllRecipies(NodeRecipe nodeRecipe, int deph) {
+        List<NodeRecipe> endResult = new LinkedList<>();
+        List<NodeRecipe> result = new LinkedList<>();
+        List<Pair<Item, Integer>> itemPairList = nodeRecipe.getRecipe().getIngredients();
 
-        Recipe recipe = nodeRecipe.getRecipe();
+        for(Pair<Item, Integer> item: itemPairList){
+            if(!item.getLeft().isRawMaterial()){
+            List<NodeRecipe> newNodeList = new LinkedList<>();
 
-        for(Pair<Item, Integer> itemIntegerPair: recipe.getIngredients()){
+            if(result.isEmpty()) {
+                result.add(nodeRecipe);
+            }
 
-            Item item = itemIntegerPair.getLeft();
-            if(!item.isRawMaterial() && nodeRecipe.isNewNode()){
+            for(NodeRecipe node: result) {
+                List<Recipe> recipeList = getListOfRecipesProducts(item.getLeft());
 
-                for(Recipe r: getListOfRecipesProducts(item)){
+                for (Recipe recipe : recipeList) {
 
-                    NodeRecipe newNodeRecipe = new NodeRecipe(r, nodeRecipe);
-                    nodeRecipe.addLeaf(newNodeRecipe);
+                    NodeRecipe newNodeRecipe = new NodeRecipe(recipe, item, nodeRecipe);
 
-                    getListOfAllRecipies(newNodeRecipe);
+                    if (!item.getLeft().isRawMaterial() && newNodeRecipe.isNewNode()) {
+
+                        List<NodeRecipe> floor = getListOfAllRecipies(newNodeRecipe, deph +1);
+
+                        for (NodeRecipe r : floor) {
+                            newNodeList.add(r);
+                        }
+
+                    }
                 }
             }
+            result = newNodeList;
+            }
         }
-        return nodeRecipe;
+        if(result.isEmpty())
+            result.add(nodeRecipe);
+        return result;
     }
 
     public List<Recipe> getListOfRecipesIngredient(Item item) {

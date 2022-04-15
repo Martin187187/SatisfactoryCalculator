@@ -1,5 +1,6 @@
 package model;
 
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class NodeItem {
         this.item = item;
         this.parent = parent;
         this.leafList = new LinkedList<>();
+
     }
 
     public boolean isNewElement(){
