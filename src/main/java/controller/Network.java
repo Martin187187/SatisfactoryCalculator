@@ -7,9 +7,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Network {
@@ -18,59 +16,88 @@ public class Network {
     private List<NetworkNode> networkNodeList;
 
     public Network(List<NetworkNode> networkNodeList){
-
         this.networkNodeList = networkNodeList;
 
     }
 
     // TODO: item should be a list
-    public float calculateValue(Item item, List<Pair<Item, Float>> resources){
+    public float calculateValue(Item item, Map<Item, Float> resources, boolean print){
 
-        Queue<Pair<NetworkNode, Float>> nodesToVisit = new LinkedList<>();
-        List<Pair<NetworkNode, Float>> nodesVisited = new LinkedList<>();
 
-        nodesToVisit.add(new ImmutablePair<>(findItemInNetwork(item),1f));
+        Map<NetworkNode, Float> workerQueue = new HashMap<>();
+        Map<NetworkNode, Float> rawResources = new HashMap<>();
 
-        while(!nodesToVisit.isEmpty()){
-            Pair<NetworkNode, Float> visitPair = nodesToVisit.poll();
-            NetworkNode visitNode = visitPair.getKey();
-            float amount = visitPair.getValue();
+        NetworkNode node = findItemInNetwork(item);
+        workerQueue.put(node, 1f);
 
-            List<Recipe> recipeList = visitNode.getRecipeList();
-            List<Float> weights = visitNode.getWeightList();
-            if(nodesVisited.stream().anyMatch(x -> x.getKey().equals(visitPair.getLeft()))){
+        while(!workerQueue.isEmpty()){
+            NetworkNode networkNode = workerQueue.keySet().iterator().next();
+            float n = workerQueue.get(networkNode);
+            workerQueue.remove(networkNode);
 
-                //update numbers to produce for current item
-                for(Pair<NetworkNode, Float> networkNodeFloatPair: nodesVisited){
-                    if(networkNodeFloatPair.getLeft().equals(visitNode)){
-                        float n = networkNodeFloatPair.getValue();
-                        networkNodeFloatPair.setValue(n + amount);
-                        break;
+            List<Recipe> recipes = networkNode.getRecipeList();
+            List<Float> weights = networkNode.getWeightList();
+            for(int i = 0; i < recipes.size(); i++){
+
+                Recipe recipe = recipes.get(i);
+                float weight = weights.get(i);
+
+                float productAmount = 1;
+                for(Pair<Item, Integer> itemIntegerPair: recipe.getProducts()){
+                    if(itemIntegerPair.getLeft().equals(networkNode.getItem())){
+                        productAmount = itemIntegerPair.getRight();
                     }
                 }
-            } else {
+                for(Pair<Item, Integer> itemIntegerPair: recipe.getIngredients()){
 
-                nodesVisited.add(visitPair);
-                if(!visitNode.getItem().isRawMaterial()) {
+                    Item currentItem = itemIntegerPair.getLeft();
+                    float amount = itemIntegerPair.getRight();
 
-                    for (int i = 0; i < recipeList.size(); i++) {
-                        Recipe recipe = recipeList.get(i);
-                        float weight = weights.get(i);
+                    NetworkNode currentNode = findItemInNetwork(currentItem);
 
-                        for (Pair<Item, Integer> ingredient : recipe.getIngredients()) {
-                            float n = ingredient.getValue() * weight;
-                            NetworkNode newNetworkNode = findItemInNetwork(ingredient.getKey());
-                            nodesToVisit.add(new MutablePair<>(newNetworkNode, n));
+                    if(itemIntegerPair.getLeft().isRawMaterial()){
+
+                        if(rawResources.containsKey(currentNode)){
+                            float currentAmount = rawResources.get(currentNode);
+                            rawResources.put(currentNode, currentAmount + n*amount*weight/productAmount);
+                        } else {
+                            rawResources.put(currentNode, n*amount*weight/productAmount);
+                        }
+
+                    }else {
+                        if(workerQueue.containsKey(currentNode)){
+                            float currentAmount = workerQueue.get(currentNode);
+                            workerQueue.put(currentNode, currentAmount + n*amount*weight/productAmount);
+                        } else {
+                            workerQueue.put(currentNode, n*amount*weight/productAmount);
                         }
                     }
                 }
             }
         }
 
-        //count raw materials
-        List<Pair<NetworkNode, Float>> rawNodes = nodesVisited.stream().filter(x -> x.getKey().getItem().isRawMaterial()).collect(Collectors.toList());
-        System.out.println(rawNodes);
-        return 0;
+        float result = Float.MAX_VALUE;
+        NetworkNode best = null;
+        for(Map.Entry<NetworkNode, Float> entry: rawResources.entrySet()){
+            Item i = entry.getKey().getItem();
+
+
+            if(resources.containsKey(i)){
+                float val = resources.get(i)/entry.getValue();
+
+                if(val<result) {
+                    result = val;
+                    best = entry.getKey();
+                }
+
+                if(print){
+                    System.out.println("val: "+ val + "->"+entry.getKey());
+                }
+            }
+        }
+
+
+        return result;
     }
 
     public NetworkNode findItemInNetwork(Item item){
@@ -85,5 +112,47 @@ public class Network {
         return null;
     }
 
+    public Network createNewNode(float i){
+        Random rdm = new Random();
+        float r = rdm.nextFloat();
 
+        List<NetworkNode> nodeList = new LinkedList<>();
+        for(NetworkNode node: networkNodeList){
+
+            List<Float> weightList = new LinkedList<>();
+            float sum = 0;
+
+            for(Float weight: node.getWeightList()){
+                float newWeight = rdm.nextBoolean() ? weight - r : weight + r;
+                newWeight = Math.max(0, Math.min(1, newWeight));
+                sum+=newWeight;
+                weightList.add(newWeight);
+            }
+            List<Float> weightList2 = new LinkedList<>();
+            for(Float weight: weightList){
+                float newWeight;
+                if(sum==0){
+                    newWeight = 1f/weightList.size();
+                } else {
+
+                    newWeight = weight/sum;
+                }
+                weightList2.add(newWeight);
+            }
+            NetworkNode newNode = new NetworkNode(node.getItem(), node.getRecipeList(), weightList2);
+            nodeList.add(newNode);
+        }
+        return new Network(nodeList);
+    }
+
+    public List<NetworkNode> getNetworkNodeList() {
+        return networkNodeList;
+    }
+
+    @Override
+    public String toString() {
+        return "Network{" +
+                "networkNodeList=" + networkNodeList +
+                '}';
+    }
 }

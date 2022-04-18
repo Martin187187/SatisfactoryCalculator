@@ -40,6 +40,31 @@ public class DataController {
         nitricAcid.setSinkPoints(nitricAcid.getSinkPoints() / 1000);
         Item nitrogenGas = itemList.stream().filter(x -> x.getClassName().equals("Desc_NitrogenGas_C")).findFirst().get();
         nitrogenGas.setSinkPoints(nitrogenGas.getSinkPoints() / 1000);
+
+        //remove dumb recipes
+        List<Recipe> newList = new LinkedList<>();
+        for(Recipe r: recipeList){
+            String classname = r.getClassName();
+
+            switch (classname){
+                case "Recipe_UnpackageBioFuel_C":
+                case "Recipe_UnpackageFuel_C":
+                case "Recipe_UnpackageOil_C":
+                case "Recipe_UnpackageOilResidue_C":
+                case "Recipe_UnpackageWater_C":
+                case "Recipe_UnpackageAlumina_C":
+                case "Recipe_UnpackageTurboFuel_C":
+                case "Recipe_UnpackageSulfuricAcid_C":
+                case "Recipe_UnpackageNitrogen_C":
+                case "Recipe_UnpackageNitricAcid_C":
+                    break;
+                default:
+                    newList.add(r);
+                    break;
+            }
+
+            }
+        this.recipeList = newList;
     }
 
 
@@ -64,55 +89,62 @@ public class DataController {
 
     }
 
-    public List<Pair<Item, Float>> getRawItems(){
-        List<Pair<Item, Float>> result = new LinkedList<>();
+    public Map<Item, Float> getRawItems(){
+        Map<Item, Float> result = new HashMap<>();
 
         for(Item item: itemList){
             switch (item.getClassName()){
                 case "Desc_Stone_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 3000f);
                     break;
                 case "Desc_OreIron_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 4000f);
                     break;
                 case "Desc_OreCopper_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 3000f);
                     break;
                 case "Desc_OreGold_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 500f);
                     break;
                 case "Desc_Coal_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 1000f);
                     break;
                 case "Desc_RawQuartz_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 1000f);
                     break;
                 case "Desc_Sulfur_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 500f);
                     break;
                 case "Desc_OreBauxite_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 2000f);
                     break;
                 case "Desc_SAM_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 1000f);
                     break;
                 case "Desc_OreUranium_C":
-                    result.add(new ImmutablePair<>(item, 1000f));
+                    result.put(item, 200f);
                     break;
                 case "Desc_Water_C":
-                    result.add(new ImmutablePair<>(item, 10000000f));
+                    result.put(item, 1000000000f);
                     break;
                 case "Desc_LiquidOil_C":
-                    result.add(new ImmutablePair<>(item, 1000000f));
+                    result.put(item, 1000000f);
                     break;
                 case "Desc_LiquidBiofuel_C":
-                    result.add(new ImmutablePair<>(item, 1000000f));
+                    result.put(item, 0f);
                     break;
                 case "Desc_NitrogenGas_C":
-                    result.add(new ImmutablePair<>(item, 1000000f));
+                    result.put(item, 1000000f);
                     break;
                 case "Desc_FluidCanister_C":
-                    result.add(new ImmutablePair<>(item, 100000000f));
+                    result.put(item, 1000000000f);
+                    break;
+                case "Desc_Rubber_C":
+                    result.put(item, 8000f);
+                    break;
+                case "Desc_Plastic_C":
+                    result.put(item, 8000f)
+                    ;
                     break;
 
             }

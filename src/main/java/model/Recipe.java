@@ -61,12 +61,7 @@ public class Recipe extends Entity {
 
     @Override
     public String toString() {
-        return "Recipe{" +
-                "name='" + name + '\'' +
-                ", ingredients=" + ingredients.toString()+
-                ", products=" + products.toString() +
-                ", duration=" + duration +
-                "}";
+        return "Recipe{" +className + '\'' +"}";
     }
 
 

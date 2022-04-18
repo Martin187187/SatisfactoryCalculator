@@ -16,6 +16,11 @@ public class NetworkNode {
         this.recipeList = new LinkedList<>();
         this.weightList = new LinkedList<>();
     }
+    public NetworkNode(Item item, List<Recipe> recipeList, List<Float> weightList){
+        this.item = item;
+        this.recipeList = recipeList;
+        this.weightList = weightList;
+    }
     public void addRecipe(Recipe recipe){
         recipeList.add(recipe);
     }
@@ -63,7 +68,10 @@ public class NetworkNode {
 
     @Override
     public String toString() {
-        return "\nNetworkNode{"+ item.getName() +
+        return "NetworkNode{" +
+                "item=" + item +
+                ", recipeList=" + recipeList +
+                ", weightList=" + weightList +
                 '}';
     }
 }
