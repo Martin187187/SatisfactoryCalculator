@@ -16,18 +16,15 @@ public class Main {
         water.setSinkPoints(0);
 
         Item item = new Item("Desc_SpaceElevatorPart_7_C", null, null, 1);
-        printData(item, controller);
+        //printData(item, controller);
 
         Item item2 = new Item("Desc_SpaceElevatorPart_6_C", null, null, 1);
-        printData(item2, controller);
+        //printData(item2, controller);
 
-        Item item3 = new Item("Desc_SpaceElevatorPart_8_C", null, null, 1);
-        printData(item3, controller);
-
-        Item item4 = new Item("Desc_Rubber_C", null, null, 1);
-        printData(item4, controller);
-
-
+        Item item3 = itemList.stream().filter(x -> x.getClassName().equals("Desc_SteelIngot_C")).findFirst().get();
+        System.out.println(controller.getListOfRecipesProducts(item3).get(2).getIngredients());
+//Recipe_Alternate_Plastic_1_C
+//Recipe_Alternate_RecycledRubber_C
         /*
         Item sc = itemList.stream().filter(x -> x.getClassName().equals("Desc_ModularFrameHeavy_C")).findFirst().get();
         printData(sc, controller);

@@ -10,8 +10,8 @@ import java.util.*;
 public class Recipe extends Entity {
 
 
-    private List<Pair<Item, Integer>> ingredients;
-    private List<Pair<Item, Integer>> products;
+    private List<Pair<Item, Float>> ingredients;
+    private List<Pair<Item, Float>> products;
     private float duration;
 
     private Building producedIn;
@@ -35,20 +35,28 @@ public class Recipe extends Entity {
     public float scaleToProduct(Item item){
         return 1;
     }
-    public void addIngredient(Item item, Integer amount){
+    public void addIngredient(Item item, Float amount){
         ingredients.add(new ImmutablePair<>(item, amount));
     }
 
-    public void addProduct(Item item, Integer amount){
+    public void addProduct(Item item, Float amount){
         products.add(new ImmutablePair<>(item, amount));
     }
 
-    public List<Pair<Item, Integer>> getIngredients() {
+    public List<Pair<Item, Float>> getIngredients() {
         return ingredients;
     }
 
-    public List<Pair<Item, Integer>> getProducts() {
+    public List<Pair<Item, Float>> getProducts() {
         return products;
+    }
+
+    public void setIngredients(List<Pair<Item, Float>> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setProducts(List<Pair<Item, Float>> products) {
+        this.products = products;
     }
 
     public float getDuration() {
@@ -74,7 +82,7 @@ public class Recipe extends Entity {
         obj.put("producedIn", producedIn.toJSONString());
 
         JSONArray ingArray = new JSONArray();
-        for(Pair<Item, Integer> pair: ingredients){
+        for(Pair<Item, Float> pair: ingredients){
             JSONObject ing = new JSONObject();
             ing.put("item", pair.getKey().toJSONString());
             ing.put("amount", pair.getValue());
@@ -83,7 +91,7 @@ public class Recipe extends Entity {
         obj.put("ingredients", ingArray);
 
         JSONArray proArray = new JSONArray();
-        for(Pair<Item, Integer> pair: ingredients){
+        for(Pair<Item, Float> pair: ingredients){
             JSONObject pro = new JSONObject();
             pro.put("item", pair.getKey().toJSONString());
             pro.put("amount", pair.getValue());

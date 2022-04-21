@@ -10,17 +10,17 @@ import java.util.Objects;
 public class NodeRecipe {
 
     Recipe recipe;
-    Pair<Item, Integer> item;
+    Pair<Item, Float> item;
     NodeRecipe parent;
     List<NodeRecipe> leafList;
-    public NodeRecipe(Recipe recipe, Pair<Item, Integer> item, NodeRecipe parent){
+    public NodeRecipe(Recipe recipe, Pair<Item, Float> item, NodeRecipe parent){
         this.recipe = recipe;
         this.item = item;
         this.parent = parent;
         this.leafList = new LinkedList<>();
     }
 
-    public Pair<Item, Integer> getItem() {
+    public Pair<Item, Float> getItem() {
         return item;
     }
 

@@ -86,6 +86,7 @@ public class GameLoader {
         collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGItemDescriptorNuclearFuel'")).getJSONArray(CLASSES));
         collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGConsumableEquipment'")).getJSONArray(CLASSES));
         collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGItemDescriptorBiomass'")).getJSONArray(CLASSES));
+        collectItem(jsonfile.getJSONObject(getNumber("Class'/Script/FactoryGame.FGConsumableDescriptor'")).getJSONArray(CLASSES));
     }
 
     private void collectItem(JSONArray arr) {
@@ -118,17 +119,19 @@ public class GameLoader {
 
 
             String classname = obj.getString(CLASS_NAME);
+            if(classname=="Recipe_PowerPoleWallMk3_C")
+            System.out.println(classname);
             String name = obj.getString(NAME);
             String dur = obj.getString(DURATION);
             Recipe recipe = new Recipe(classname, name, Float.parseFloat(dur), null);
 
             String rawIng = obj.getString(INGREDIENTS);
             for(Item.AmountOfItems amountOfItems: getIngredients(rawIng)){
-                recipe.addIngredient(amountOfItems.getItem(), amountOfItems.getAmount());
+                recipe.addIngredient(amountOfItems.getItem(), (float) amountOfItems.getAmount());
             }
             String rawPro= obj.getString(PRODUCTS);
             for(Item.AmountOfItems amountOfItems: getIngredients(rawPro)){
-                recipe.addProduct(amountOfItems.getItem(), amountOfItems.getAmount());
+                recipe.addProduct(amountOfItems.getItem(), (float) amountOfItems.getAmount());
             }
             recipeList.add(recipe);
         }

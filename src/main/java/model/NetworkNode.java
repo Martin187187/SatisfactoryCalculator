@@ -26,6 +26,7 @@ public class NetworkNode {
     }
 
     public void calculateWeights(){
+
         List<Float> rdmList = new LinkedList<>();
         float sum = 0;
         for(Recipe recipe: recipeList){
@@ -72,6 +73,6 @@ public class NetworkNode {
                 "item=" + item +
                 ", recipeList=" + recipeList +
                 ", weightList=" + weightList +
-                '}';
+                "}\n";
     }
 }

@@ -35,9 +35,7 @@ public class Item extends Entity  {
                 className.equals("Desc_LiquidOil_C")||
                 className.equals("Desc_LiquidBiofuel_C")||
                 className.equals("Desc_NitrogenGas_C")||
-                className.equals("Desc_FluidCanister_C")||
-                className.equals("Desc_Rubber_C")||
-                className.equals("Desc_Plastic_C");
+                className.equals("Desc_FluidCanister_C");
     }
 
 

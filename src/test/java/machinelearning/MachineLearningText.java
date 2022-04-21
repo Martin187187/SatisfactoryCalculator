@@ -1,61 +1,59 @@
 package machinelearning;
 
 import controller.DataController;
+import controller.LearningController;
 import controller.Network;
 import model.Item;
 import model.NetworkNode;
 import model.Recipe;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class MachineLearningText {
-
+    static LearningController learner = new LearningController();
     public static void main(String[] args) {
 
+        JFrame ablak = new JFrame("Snake game");
+        ablak.setVisible(true);
+        ablak.setSize(new Dimension(600,600));
+        ablak.setFocusable(true);
+        ablak.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ablak.addKeyListener(new KeyListener(){
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_UP && learner.isLoop()) {
+                    learner.exit();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_R){
+                    learner.exit();
+                    learner = new LearningController();
+                    learner.start();
+                }
 
-        DataController controller = new DataController();
-        List<Item> itemList = controller.getItemList();
-        Item water = itemList.stream().filter(x -> x.getClassName().equals("Desc_Water_C")).findFirst().get();
-        water.setSinkPoints(0);
-
-        Item item = new Item("Desc_Computer_C", null, null, 1);
-
-        Map<Item, Float> rawResources = controller.getRawItems();
-
-        TreeMap<Float, Network> networkTreeMap = new TreeMap<>();
-        for(int i = 0; i < 100; i++) {
-            Network network = new Network(controller.createNetworkNodes());
-            float value = network.calculateValue(item, rawResources, false);
-
-            networkTreeMap.put(value, network);
-        }
-
-        Network result;
-        while(true) {
-            System.out.println(networkTreeMap.lastKey());
-
-            while (networkTreeMap.entrySet().size()>50) {
-                networkTreeMap.pollFirstEntry();
             }
-            TreeMap<Float, Network> newTreeMap = new TreeMap<>();
-            List<Network> networkList = new ArrayList<>(networkTreeMap.values());
 
-            for (int i = 0; i < networkList.size(); i++) {
-                Network n2 = networkList.get(i).createNewNode(1-i/50f);
-                newTreeMap.put(networkList.get(i).calculateValue(item, rawResources, false), networkList.get(i));
-                newTreeMap.put(n2.calculateValue(item, rawResources, false), n2);
+            @Override
+            public void keyTyped(KeyEvent e) {
             }
-            networkTreeMap = newTreeMap;
-            if(networkTreeMap.lastKey()>280f){
-                result = networkTreeMap.lastEntry().getValue();
-                break;
+
+            @Override
+            public void keyReleased(KeyEvent e) {
             }
-        }
-        result.calculateValue(item, rawResources, true);
-        NetworkNode test = result.getNetworkNodeList().stream().filter(x -> x.getItem().equals(item)).findFirst().get();
-        System.out.println("___");
-        System.out.println(test);
+        });
+        ablak.setVisible(true);
+        learner.start();
+
     }
+
 }

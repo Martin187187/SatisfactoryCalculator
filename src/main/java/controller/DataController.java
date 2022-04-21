@@ -41,6 +41,9 @@ public class DataController {
         Item nitrogenGas = itemList.stream().filter(x -> x.getClassName().equals("Desc_NitrogenGas_C")).findFirst().get();
         nitrogenGas.setSinkPoints(nitrogenGas.getSinkPoints() / 1000);
 
+        Item custom = new Item("custom", "custom", "nan", 543632);
+        itemList.add(custom);
+
         //remove dumb recipes
         List<Recipe> newList = new LinkedList<>();
         for(Recipe r: recipeList){
@@ -57,7 +60,33 @@ public class DataController {
                 case "Recipe_UnpackageSulfuricAcid_C":
                 case "Recipe_UnpackageNitrogen_C":
                 case "Recipe_UnpackageNitricAcid_C":
+                case "Recipe_Alternate_Plastic_1_C":
+                case "Recipe_Alternate_RecycledRubber_C":
                     break;
+                case "Recipe_UraniumCell_C":
+                    List<Pair<Item, Float>> ingredientList = r.getIngredients();
+                    List<Pair<Item, Float>> productList = r.getProducts();
+
+                    List<Pair<Item, Float>> newProductList = new LinkedList<>();
+                    Pair<Item, Float> sulfurAcid = null;
+                    for(Pair<Item, Float> ing: productList){
+                        if(ing.getLeft().getClassName().equals("Desc_SulfuricAcid_C")){
+                            sulfurAcid = ing;
+                        } else {
+                            newProductList.add(ing);
+                        }
+                    }
+
+                    List<Pair<Item, Float>> newIngredientList = new LinkedList<>();
+                    for(Pair<Item, Float> ing: ingredientList){
+                        if(ing.getLeft().getClassName().equals("Desc_SulfuricAcid_C")){
+                            newIngredientList.add(new ImmutablePair<>(ing.getLeft(), ing.getValue() - sulfurAcid.getValue()));
+                        } else {
+                            newIngredientList.add(ing);
+                        }
+                    }
+                    r.setIngredients(newIngredientList);
+                    r.setProducts(newProductList);
                 default:
                     newList.add(r);
                     break;
@@ -65,6 +94,24 @@ public class DataController {
 
             }
         this.recipeList = newList;
+
+        //add recipes for custom item
+        for(int i = 1; i <= 9; i++){
+            String number = Integer.toString(i);
+            Recipe r = new Recipe("r"+number, "r"+number, 0, null);
+            Item space = itemList.stream().filter(x -> x.getClassName().equals("Desc_SpaceElevatorPart_"+number+"_C")).findFirst().get();
+            r.addIngredient(space, custom.getSinkPoints()/ space.getSinkPoints());
+            r.addProduct(custom, 1f);
+            recipeList.add(r);
+        }
+        Recipe r = new Recipe("rubplas", "rubplas", 0, null);
+        Item rubber = itemList.stream().filter(x -> x.getClassName().equals("Desc_Rubber_C")).findFirst().get();
+        Item plastic = itemList.stream().filter(x -> x.getClassName().equals("Desc_Plastic_C")).findFirst().get();
+        r.addIngredient(fuel, 12000f);
+        r.addProduct(rubber, 6f);
+        r.addProduct(plastic, 6f);
+        recipeList.add(r);
+
     }
 
 
@@ -85,6 +132,7 @@ public class DataController {
             result.add(node);
 
         }
+
         return result;
 
     }
@@ -95,56 +143,49 @@ public class DataController {
         for(Item item: itemList){
             switch (item.getClassName()){
                 case "Desc_Stone_C":
-                    result.put(item, 3000f);
+                    result.put(item, 52860f);
                     break;
                 case "Desc_OreIron_C":
-                    result.put(item, 4000f);
+                    result.put(item, 70380f);
                     break;
                 case "Desc_OreCopper_C":
-                    result.put(item, 3000f);
+                    result.put(item, 28860f);
                     break;
                 case "Desc_OreGold_C":
-                    result.put(item, 500f);
+                    result.put(item, 11040f);
                     break;
                 case "Desc_Coal_C":
-                    result.put(item, 1000f);
+                    result.put(item, 30900f);
                     break;
                 case "Desc_RawQuartz_C":
-                    result.put(item, 1000f);
+                    result.put(item, 10500f);
                     break;
                 case "Desc_Sulfur_C":
-                    result.put(item, 500f);
+                    result.put(item, 8040f);
                     break;
                 case "Desc_OreBauxite_C":
-                    result.put(item, 2000f);
+                    result.put(item, 9780f);
                     break;
                 case "Desc_SAM_C":
-                    result.put(item, 1000f);
+                    result.put(item, 5400f);
                     break;
                 case "Desc_OreUranium_C":
-                    result.put(item, 200f);
+                    result.put(item, 2100f);
                     break;
                 case "Desc_Water_C":
                     result.put(item, 1000000000f);
                     break;
                 case "Desc_LiquidOil_C":
-                    result.put(item, 1000000f);
+                    result.put(item, 11700000f);
                     break;
                 case "Desc_LiquidBiofuel_C":
                     result.put(item, 0f);
                     break;
                 case "Desc_NitrogenGas_C":
-                    result.put(item, 1000000f);
+                    result.put(item, 12000000f);
                     break;
                 case "Desc_FluidCanister_C":
                     result.put(item, 1000000000f);
-                    break;
-                case "Desc_Rubber_C":
-                    result.put(item, 8000f);
-                    break;
-                case "Desc_Plastic_C":
-                    result.put(item, 8000f)
-                    ;
                     break;
 
             }
@@ -173,11 +214,11 @@ public class DataController {
         NodeRecipe bestRecipe = null;
         float bestValue = Float.MAX_VALUE;
         for (Recipe r : recipeList) {
-            Pair<Item, Integer> product = r.getProducts().stream().filter(x -> x.getKey() != null).filter(x -> x.getKey().getClassName().equals(item.getClassName())).findFirst().get();
+            Pair<Item, Float> product = r.getProducts().stream().filter(x -> x.getKey() != null).filter(x -> x.getKey().getClassName().equals(item.getClassName())).findFirst().get();
 
             Map<Item, Float> combinedMap = new HashMap<>();
             NodeRecipe newRecipe = new NodeRecipe(r, product, null);
-            for (Pair<Item, Integer> integerPair : r.getIngredients()) {
+            for (Pair<Item, Float> integerPair : r.getIngredients()) {
                 if (integerPair.getKey() == null) {
                     continue;
                 }
@@ -219,9 +260,9 @@ public class DataController {
     public List<NodeRecipe> getListOfAllRecipies(NodeRecipe nodeRecipe, int deph) {
         List<NodeRecipe> endResult = new LinkedList<>();
         List<NodeRecipe> result = new LinkedList<>();
-        List<Pair<Item, Integer>> itemPairList = nodeRecipe.getRecipe().getIngredients();
+        List<Pair<Item, Float>> itemPairList = nodeRecipe.getRecipe().getIngredients();
 
-        for(Pair<Item, Integer> item: itemPairList){
+        for(Pair<Item, Float> item: itemPairList){
             if(!item.getLeft().isRawMaterial()){
             List<NodeRecipe> newNodeList = new LinkedList<>();
 

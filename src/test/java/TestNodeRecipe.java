@@ -20,8 +20,8 @@ public class TestNodeRecipe {
         Item item = new Item("Desc_Silica_C", null, null, 1);
 
         Recipe root = new Recipe("nan", "root", 0, null);
-        root.addIngredient(item, 1);
-        NodeRecipe node = new NodeRecipe(root, new ImmutablePair<>(item, 1),null );
+        root.addIngredient(item, 1f);
+        NodeRecipe node = new NodeRecipe(root, new ImmutablePair<>(item, 1f),null );
 
         List<NodeRecipe> nodeRecipe = controller.getListOfAllRecipies(node,0);
         System.out.println("ergebnis");
