@@ -104,13 +104,17 @@ public class DataController {
             r.addProduct(custom, 1f);
             recipeList.add(r);
         }
-        Recipe r = new Recipe("rubplas", "rubplas", 0, null);
+        Recipe r = new Recipe("rub", "rub", 0, null);
+        Recipe p = new Recipe("plas", "plas", 0, null);
         Item rubber = itemList.stream().filter(x -> x.getClassName().equals("Desc_Rubber_C")).findFirst().get();
-        Item plastic = itemList.stream().filter(x -> x.getClassName().equals("Desc_Plastic_C")).findFirst().get();
-        r.addIngredient(fuel, 12000f);
-        r.addProduct(rubber, 6f);
-        r.addProduct(plastic, 6f);
+        r.addIngredient(fuel, 18000f);
+        r.addProduct(rubber, 18f);
         recipeList.add(r);
+        Item plastic = itemList.stream().filter(x -> x.getClassName().equals("Desc_Plastic_C")).findFirst().get();
+        p.addIngredient(fuel, 18000f);
+        p.addProduct(plastic, 18f);
+        recipeList.add(p);
+
 
     }
 
