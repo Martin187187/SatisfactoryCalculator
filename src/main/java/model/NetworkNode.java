@@ -1,11 +1,15 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class NetworkNode {
+public class NetworkNode implements JSONString {
 
     private Item item;
     private List<Recipe> recipeList;
@@ -24,7 +28,12 @@ public class NetworkNode {
     public void addRecipe(Recipe recipe){
         recipeList.add(recipe);
     }
-
+    public void addWeight(Float weight){
+        weightList.add(weight);
+    }
+    public void setWeightList(List<Float> weightList){
+        this.weightList = weightList;
+    }
     public void calculateWeights(){
 
         List<Float> rdmList = new LinkedList<>();
@@ -74,5 +83,29 @@ public class NetworkNode {
                 ", recipeList=" + recipeList +
                 ", weightList=" + weightList +
                 "}\n";
+    }
+
+    @Override
+    public String toJSONString() {
+        JSONObject obj = new JSONObject();
+        obj.put("item", item.getClassName());
+
+        JSONArray recipeJsonArray = new JSONArray();
+        for(Recipe r: recipeList){
+            recipeJsonArray.put(r.getClassName());
+        }
+        obj.put("recipes", recipeJsonArray);
+
+        JSONArray weightJsonArray = new JSONArray();
+        for(Float f: weightList){
+            weightJsonArray.put(f);
+        }
+        obj.put("weights", weightJsonArray);
+
+        return obj.toString();
+    }
+
+    public NetworkNode clone(){
+        return new NetworkNode(item, recipeList, weightList);
     }
 }

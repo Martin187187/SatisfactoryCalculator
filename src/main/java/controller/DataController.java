@@ -3,8 +3,14 @@ package controller;
 import model.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Node;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -321,6 +327,41 @@ public class DataController {
         return result;
     }
 
+    public Network loadNetworkFromFile(){
+        File file = new File("savefiles/test.json");
+        BufferedReader reader = null;
+        List<NetworkNode> networkNodeList = new LinkedList<>();
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String json = reader.readLine();
+            JSONArray arr = new JSONArray(json);
+
+            for(int i = 0; i < arr.length(); i++){
+                String nodeString = (String) arr.get(i);
+                JSONObject obj = new JSONObject(nodeString);
+                Item item = itemList.stream().filter(x -> x.getClassName().equals(obj.getString("item"))).findFirst().get();
+
+                NetworkNode networkNode = new NetworkNode(item);
+                JSONArray recipes = obj.getJSONArray("recipes");
+                for(int j = 0; j < recipes.length(); j++){
+                    String classname = recipes.getString(j);
+                    Recipe recipe = recipeList.stream().filter(x -> x.getClassName().equals(classname)).findFirst().get();
+                    networkNode.addRecipe(recipe);
+                }
+
+                JSONArray weights = obj.getJSONArray("weights");
+                for(int j = 0; j < weights.length(); j++){
+                    Float weight = weights.getFloat(j);
+                    networkNode.addWeight(weight);
+                }
+                networkNodeList.add(networkNode);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new Network(networkNodeList);
+    }
     public List<Item> getItemList() {
         return itemList;
     }

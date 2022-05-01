@@ -21,11 +21,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20210307</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.davidcarboni/resource-utils -->
         <dependency>
             <groupId>com.github.davidcarboni</groupId>
@@ -42,6 +37,16 @@
             <groupId>org.graphstream</groupId>
             <artifactId>gs-core</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-ui</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20220320</version>
         </dependency>
     </dependencies>
 

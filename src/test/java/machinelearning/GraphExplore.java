@@ -45,7 +45,7 @@ public class GraphExplore {
 
         while (k.hasNext()) {
             Node next = k.next();
-            next.setAttribute("ui.class", "marked");
+            next.setAttribute("ui.class", "a");
             sleep();
         }
     }
@@ -55,5 +55,5 @@ public class GraphExplore {
     }
 
     protected String styleSheet =
-            "node {fill-color: black;} node.marked {fill-color: red;} edge{fill-color: red;}";
+            "node {fill-color: black;} node.a {fill-color: red;} edge{fill-color: red;}";
 }

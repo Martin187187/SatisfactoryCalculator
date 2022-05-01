@@ -5,26 +5,34 @@ import model.NetworkNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class LearningController extends Thread{
+public class LearningController extends Subject{
 
-    private boolean loop = true;
-    public void run(){
-        loop = true;
-        DataController controller = new DataController();
+    private int counter = 0;
+    public boolean restart = false;
+    public boolean running = false;
+    public boolean feed = false;
+
+    public Network data = null;
+    private Network result = null;
+    private final TreeMap<Float, Network> networkTreeMap = new TreeMap<>();
+
+    private final Item item = new Item("Desc_SpaceElevatorPart_7_C", null, null, 1);
+    private final List<Pair<Item, Float>> hasToProduce = new LinkedList<>();
+    private final Map<Item, Float> rawResources;
+    private DataController controller = new DataController();
+    public LearningController(boolean createNew) {
         List<Item> itemList = controller.getItemList();
         Item water = itemList.stream().filter(x -> x.getClassName().equals("Desc_Water_C")).findFirst().get();
         water.setSinkPoints(0);
 
-        Item item = new Item("Desc_SpaceElevatorPart_7_C", null, null, 1);
-        System.out.println(item);
 
 
-
-        List<Pair<Item, Float>> hasToProduce = new LinkedList<>();
         Item item2 = new Item("Desc_NuclearFuelRod_C", null, null, 1);
         hasToProduce.add(new ImmutablePair<>(item2, 50.4f));
 
@@ -49,49 +57,106 @@ public class LearningController extends Thread{
 
 
 
-        Map<Item, Float> rawResources = controller.getRawItems();
+        rawResources = controller.getRawItems();
 
-        TreeMap<Float, Network> networkTreeMap = new TreeMap<>();
+        if(createNew){
+            restart();
+        } else {
+            Network loadedNetwork = controller.loadNetworkFromFile();
+            feed(loadedNetwork);
+        }
+    }
+
+    public void feed(Network network){
+        float loadedValue = network.calculateValue(item, hasToProduce, rawResources, false);
+
+        networkTreeMap.clear();
+        for (int i = 0; i < 99; i++) {
+
+            Network n = network.createNewNode();
+            networkTreeMap.put(n.calculateValue(item, hasToProduce, rawResources, false), n);
+        }
+        networkTreeMap.put(loadedValue, network);
+        result = networkTreeMap.lastEntry().getValue();
+        notifyObservers();
+    }
+
+    public void restart(){
+        networkTreeMap.clear();
         for(int i = 0; i < 100; i++) {
             Network network = new Network(controller.createNetworkNodes());
             float value = network.calculateValue(item, hasToProduce, rawResources, false);
 
             networkTreeMap.put(value, network);
         }
-
-        Network result = null;
-
-        while(loop) {
-            System.out.println(networkTreeMap.lastKey());
-
-            while (networkTreeMap.entrySet().size()>50) {
-                networkTreeMap.pollFirstEntry();
+        result = networkTreeMap.lastEntry().getValue();
+    }
 
 
-            }
-            Map<Float, Network> newTreeMap = Collections.synchronizedMap(new HashMap<>());
-            Set<Map.Entry<Float, Network>> set = networkTreeMap.entrySet();
-            Stream<Map.Entry<Float, Network>> stream = StreamSupport.stream(set.spliterator(), true);
-            stream.forEach(entry -> {
-                Network network = entry.getValue();
-                Network n2 = network.createNewNode();
-                newTreeMap.put(network.calculateValue(item, hasToProduce, rawResources, false), network);
-                newTreeMap.put(n2.calculateValue(item, hasToProduce, rawResources, false), n2);
-            });
-
-            networkTreeMap.clear();
-            networkTreeMap.putAll(newTreeMap);
-            result = networkTreeMap.lastEntry().getValue();
+    public void calculate(){
+        System.out.println(counter);
+        if (restart) {
+            counter = 0;
+            restart = false;
+            restart();
         }
-        result.calculateValue(item, hasToProduce, rawResources, true);
-        System.out.println("___");
-        System.out.println(result);
+        if(feed) {
+            counter = 0;
+            feed = false;
+            feed(data);
+        }
+        while (networkTreeMap.entrySet().size() > 50) {
+            networkTreeMap.pollFirstEntry();
+        }
+        Map<Float, Network> newTreeMap = Collections.synchronizedMap(new HashMap<>());
+        Set<Map.Entry<Float, Network>> set = networkTreeMap.entrySet();
+        Stream<Map.Entry<Float, Network>> stream = StreamSupport.stream(set.spliterator(), true);
+        stream.forEach(entry -> {
+            Network network = entry.getValue();
+            Network n2 = network.createNewNode();
+            newTreeMap.put(network.calculateValue(item, hasToProduce, rawResources, false), network);
+            newTreeMap.put(n2.calculateValue(item, hasToProduce, rawResources, false), n2);
+        });
+
+        networkTreeMap.clear();
+        networkTreeMap.putAll(newTreeMap);
+        result = networkTreeMap.lastEntry().getValue();
+        counter++;
+        if(counter>1000 && networkTreeMap.lastEntry().getKey()<280f) {
+            restart();
+            counter = 0;
+        }
+        if(counter>100000){
+            try (PrintWriter out = new PrintWriter(new FileWriter("savefiles/good"+networkTreeMap.lastEntry().getKey()+".json"))) {
+                out.write(getResult().toJSONString());
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+
+            restart();
+            counter = 0;
+        }
+        notifyObservers();
     }
 
-    public void exit(){
-        loop = false;
+
+
+    public void printResult(){
+        synchronized (result) {
+            result.calculateValue(item, hasToProduce, rawResources, true);
+            System.out.println("___");
+            System.out.println(result);
+        }
     }
-    public boolean isLoop(){
-        return loop;
+
+    public float getScore(){
+        synchronized (result){
+            return result.calculateValue(item, hasToProduce, rawResources, false);
+        }
+    }
+    public Network getResult(){
+        synchronized (result){
+            return result;
+        }
     }
 }

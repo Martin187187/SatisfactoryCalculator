@@ -4,21 +4,20 @@ import model.Item;
 import model.NetworkNode;
 import model.Recipe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
+import org.json.JSONString;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class Network {
+public class Network implements JSONString {
 
 
-    private List<NetworkNode> networkNodeList;
-    private Map<NetworkNode, Float> amountUsedMap = new HashMap<>();
+    private final List<NetworkNode> networkNodeList;
+    private final Map<NetworkNode, Float> amountUsedMap = new HashMap<>();
 
     public Network(List<NetworkNode> networkNodeList){
         this.networkNodeList = networkNodeList;
-
     }
 
     // TODO: item should be a list
@@ -217,6 +216,7 @@ public class Network {
         return null;
     }
 
+
     public Network createNewNode(){
         Random rdm = new Random();
         float r = rdm.nextFloat();
@@ -253,11 +253,46 @@ public class Network {
         return networkNodeList;
     }
 
+    public Map<NetworkNode, Float> getAmountUsedMap() {
+        return amountUsedMap;
+    }
+
+    public List<Recipe> getUsedRecipes(){
+        List<Recipe> recipeList = new LinkedList<>();
+
+        for(Map.Entry<NetworkNode, Float> entry: amountUsedMap.entrySet()){
+            List<Recipe> entryRecipeList = entry.getKey().getRecipeList();
+            for(Recipe recipe: entryRecipeList){
+                if(!recipeList.contains(recipe)){
+                    recipeList.add(recipe);
+                }
+            }
+        }
+
+        return  recipeList;
+    }
 
     @Override
     public String toString() {
         return "Network{" +
                 "networkNodeList=" + amountUsedMap +
                 '}';
+    }
+
+    @Override
+    public String toJSONString() {
+        JSONArray arr = new JSONArray();
+        for(NetworkNode node: networkNodeList){
+            arr.put(node.toJSONString());
+        }
+        return arr.toString();
+    }
+
+    public Network clone(){
+        List<NetworkNode> result = new LinkedList<>();
+        for(NetworkNode node: networkNodeList){
+            result.add(node.clone());
+        }
+        return new Network(result);
     }
 }
