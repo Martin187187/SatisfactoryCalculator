@@ -23,10 +23,11 @@ public class LearningController extends Subject{
     private final TreeMap<Float, Network> networkTreeMap = new TreeMap<>();
 
     private final Item item = new Item("Desc_SpaceElevatorPart_7_C", null, null, 1);
-    private final List<Pair<Item, Float>> hasToProduce = new LinkedList<>();
+    public final List<Pair<Item, Float>> hasToProduce = new LinkedList<>();
     private final Map<Item, Float> rawResources;
     private DataController controller = new DataController();
-    public LearningController(boolean createNew) {
+    public LearningController(DataController dataController, boolean createNew) {
+        this.controller = dataController;
         List<Item> itemList = controller.getItemList();
         Item water = itemList.stream().filter(x -> x.getClassName().equals("Desc_Water_C")).findFirst().get();
         water.setSinkPoints(0);
@@ -78,6 +79,7 @@ public class LearningController extends Subject{
         }
         networkTreeMap.put(loadedValue, network);
         result = networkTreeMap.lastEntry().getValue();
+        result.calculateValue(item, hasToProduce, rawResources, true);
         notifyObservers();
     }
 

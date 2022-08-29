@@ -20,12 +20,9 @@ public class Network implements JSONString {
         this.networkNodeList = networkNodeList;
     }
 
-    // TODO: item should be a list
-    public float calculateValue(Item item, List<Pair<Item, Float>> hasToProduce, Map<Item, Float> resources, boolean print){
+    public Map<NetworkNode, Float> hasToProduceRawResources(List<Pair<Item, Float>> hasToProduce, Map<NetworkNode, Float> amountUsedMap, Map<NetworkNode, Float> availableResources ){
 
-        Map<NetworkNode, Float> availableResources = new HashMap<>();
         Map<NetworkNode, Float> rawResourcesMandatory = new HashMap<>();
-        Map<NetworkNode, Float> amountUsedMap = new HashMap<>();
         for(Pair<Item, Float> itemFloatPair: hasToProduce){
             Map<NetworkNode, Float> bla = calculateResourceConsumption(itemFloatPair, availableResources, amountUsedMap);
 
@@ -38,6 +35,15 @@ public class Network implements JSONString {
             }
 
         }
+        return rawResourcesMandatory;
+    }
+    // TODO: item should be a list
+    public float calculateValue(Item item, List<Pair<Item, Float>> hasToProduce, Map<Item, Float> resources, boolean print){
+
+        Map<NetworkNode, Float> availableResources = new HashMap<>();
+        Map<NetworkNode, Float> amountUsedMap = new HashMap<>();
+        Map<NetworkNode, Float> rawResourcesMandatory = hasToProduceRawResources(hasToProduce, amountUsedMap, availableResources);
+
         if(print)
             System.out.println("raw"+rawResourcesMandatory);
         Map<NetworkNode, Float> amountUsedScaleMap = new HashMap<>();
@@ -46,7 +52,8 @@ public class Network implements JSONString {
             System.out.println("wasted resources1: "+ availableResources);
         }
         availableResources.clear();
-        Map<NetworkNode, Float> rawResourcesOptional = calculateResourceConsumption(new ImmutablePair<>(item, 1f), availableResources, amountUsedScaleMap);
+        Map<NetworkNode, Float> rawResourcesOptional = hasToProduceRawResources(List.of(new ImmutablePair<>(item, 0.8f),new ImmutablePair<>(item, 0.2f)), amountUsedScaleMap, availableResources);
+
 
 
 
@@ -111,7 +118,7 @@ public class Network implements JSONString {
 
         return Math.min(minValue,1)<1 ? result*0.1f: result;
     }
-    private Map<NetworkNode, Float> calculateResourceConsumption(Pair<Item, Float> itemFloatPair, Map<NetworkNode, Float> availableResources, Map<NetworkNode, Float> amountUsedMap){
+    public Map<NetworkNode, Float> calculateResourceConsumption(Pair<Item, Float> itemFloatPair, Map<NetworkNode, Float> availableResources, Map<NetworkNode, Float> amountUsedMap){
         Map<NetworkNode, Float> workerQueue = new HashMap<>();
         Map<NetworkNode, Float> rawResources = new HashMap<>();
 
