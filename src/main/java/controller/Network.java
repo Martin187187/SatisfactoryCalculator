@@ -16,6 +16,8 @@ public class Network implements JSONString {
     private final List<NetworkNode> networkNodeList;
     private final Map<NetworkNode, Float> amountUsedMap = new HashMap<>();
 
+    //dynamic computing
+
     public Network(List<NetworkNode> networkNodeList){
         this.networkNodeList = networkNodeList;
     }
@@ -38,7 +40,7 @@ public class Network implements JSONString {
         return rawResourcesMandatory;
     }
     // TODO: item should be a list
-    public float calculateValue(Item item, List<Pair<Item, Float>> hasToProduce, Map<Item, Float> resources, boolean print){
+    public float calculateValue(List<Pair<Item, Float>> itemList, List<Pair<Item, Float>> hasToProduce, Map<Item, Float> resources, boolean print){
 
         Map<NetworkNode, Float> availableResources = new HashMap<>();
         Map<NetworkNode, Float> amountUsedMap = new HashMap<>();
@@ -52,7 +54,7 @@ public class Network implements JSONString {
             System.out.println("wasted resources1: "+ availableResources);
         }
         availableResources.clear();
-        Map<NetworkNode, Float> rawResourcesOptional = hasToProduceRawResources(List.of(new ImmutablePair<>(item, 0.8f),new ImmutablePair<>(item, 0.2f)), amountUsedScaleMap, availableResources);
+        Map<NetworkNode, Float> rawResourcesOptional = hasToProduceRawResources(itemList, amountUsedScaleMap, availableResources);
 
 
 

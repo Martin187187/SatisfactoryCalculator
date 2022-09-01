@@ -21,8 +21,15 @@ public class LearningController extends Subject{
     public Network data = null;
     private Network result = null;
     private final TreeMap<Float, Network> networkTreeMap = new TreeMap<>();
+    //Item list
+    private final List<Pair<Item, Float>> item = List.of(
+            new ImmutablePair<>(new Item("Desc_SpaceElevatorPart_7_C", null, null, 1),1f)
+    );
 
-    private final Item item = new Item("Desc_SpaceElevatorPart_7_C", null, null, 1);
+
+
+
+
     public final List<Pair<Item, Float>> hasToProduce = new LinkedList<>();
     private final Map<Item, Float> rawResources;
     private DataController controller = new DataController();
@@ -112,7 +119,7 @@ public class LearningController extends Subject{
         }
         Map<Float, Network> newTreeMap = Collections.synchronizedMap(new HashMap<>());
         Set<Map.Entry<Float, Network>> set = networkTreeMap.entrySet();
-        Stream<Map.Entry<Float, Network>> stream = StreamSupport.stream(set.spliterator(), true);
+        Stream<Map.Entry<Float, Network>> stream = set.parallelStream();
         stream.forEach(entry -> {
             Network network = entry.getValue();
             Network n2 = network.createNewNode();
@@ -124,11 +131,12 @@ public class LearningController extends Subject{
         networkTreeMap.putAll(newTreeMap);
         result = networkTreeMap.lastEntry().getValue();
         counter++;
-        if(counter>1000 && networkTreeMap.lastEntry().getKey()<280f) {
+        if(counter>1000 && networkTreeMap.lastEntry().getKey()<282f) {
             restart();
             counter = 0;
         }
-        if(counter>100000){
+
+        if(counter>10000000){
             try (PrintWriter out = new PrintWriter(new FileWriter("savefiles/good"+networkTreeMap.lastEntry().getKey()+".json"))) {
                 out.write(getResult().toJSONString());
             } catch (Exception e2) {
@@ -138,6 +146,7 @@ public class LearningController extends Subject{
             restart();
             counter = 0;
         }
+
         notifyObservers();
     }
 
