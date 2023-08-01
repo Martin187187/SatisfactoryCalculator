@@ -9,7 +9,7 @@
 
 ## Introduction
 
-Satisfactory Calculator is a tool designed to assist players of the popular video game "Satisfactory" in optimizing their factory setups. It provides an easy-to-use interface for calculating production rates, resource requirements, and the number of buildings needed to achieve specific production goals.
+Satisfactory Calculator is a tool designed to assist players of the popular video game "Satisfactory" in optimizing their factory setups.
 
 The game "Satisfactory" challenges players to construct and manage complex automated factories on an alien planet. As players progress, they encounter various resources, machines, and production chains, making the need for efficient calculations crucial to success. Satisfactory Calculator aims to simplify this process and help players make informed decisions when planning their factories.
 
