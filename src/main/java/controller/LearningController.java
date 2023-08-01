@@ -13,6 +13,7 @@ import java.util.stream.StreamSupport;
 
 public class LearningController extends Subject{
 
+    public static final int CALCULATIONS_PER_ROUND = 300;
     private int counter = 0;
     public boolean restart = false;
     public boolean running = false;
@@ -23,8 +24,9 @@ public class LearningController extends Subject{
     private final TreeMap<Float, Network> networkTreeMap = new TreeMap<>();
     //Item list
     private final List<Pair<Item, Float>> item = List.of(
-            new ImmutablePair<>(new Item("Desc_SpaceElevatorPart_7_C", null, null, 1),1f)
+            new ImmutablePair<>(new Item("custom", null, null, 1),1f)
     );
+    Random rdm = new Random();
 
 
 
@@ -32,7 +34,7 @@ public class LearningController extends Subject{
 
     public final List<Pair<Item, Float>> hasToProduce = new LinkedList<>();
     private final Map<Item, Float> rawResources;
-    private DataController controller = new DataController();
+    private DataController controller;
     public LearningController(DataController dataController, boolean createNew) {
         this.controller = dataController;
         List<Item> itemList = controller.getItemList();
@@ -40,25 +42,25 @@ public class LearningController extends Subject{
         water.setSinkPoints(0);
 
 
-
+        float amount = 1f;
         Item item2 = new Item("Desc_NuclearFuelRod_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item2, 50.4f));
+        hasToProduce.add(new ImmutablePair<>(item2, 50.4f*amount));
 
 
         Item item3 = new Item("Desc_Silica_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item3, 1260f));
+        hasToProduce.add(new ImmutablePair<>(item3, 1260f*amount));
         Item item4 = new Item("Desc_NitricAcid_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item4, 756000f));
+        hasToProduce.add(new ImmutablePair<>(item4, 756000f*amount));
         Item item5 = new Item("Desc_SulfuricAcid_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item5, 756000f));
+        hasToProduce.add(new ImmutablePair<>(item5, 756000f*amount));
         Item item6 = new Item("Desc_Cement_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item6, 1512f));
+        hasToProduce.add(new ImmutablePair<>(item6, 1512f*amount));
         Item item7 = new Item("Desc_SteelPlate_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item7, 226.8f));
+        hasToProduce.add(new ImmutablePair<>(item7, 226.8f*amount));
         Item item8 = new Item("Desc_ElectromagneticControlRod_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item8, 75.6f));
+        hasToProduce.add(new ImmutablePair<>(item8, 75.6f*amount));
         Item item9 = new Item("Desc_AluminumPlateReinforced_C", null, null, 1);
-        hasToProduce.add(new ImmutablePair<>(item9, 236f));
+        hasToProduce.add(new ImmutablePair<>(item9, 126f*amount));
 
 
 
@@ -79,7 +81,7 @@ public class LearningController extends Subject{
         float loadedValue = network.calculateValue(item, hasToProduce, rawResources, false);
 
         networkTreeMap.clear();
-        for (int i = 0; i < 99; i++) {
+        for (int i = 0; i < CALCULATIONS_PER_ROUND-1; i++) {
 
             Network n = network.createNewNode();
             networkTreeMap.put(n.calculateValue(item, hasToProduce, rawResources, false), n);
@@ -92,7 +94,7 @@ public class LearningController extends Subject{
 
     public void restart(){
         networkTreeMap.clear();
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < CALCULATIONS_PER_ROUND; i++) {
             Network network = new Network(controller.createNetworkNodes());
             float value = network.calculateValue(item, hasToProduce, rawResources, false);
 
@@ -114,9 +116,29 @@ public class LearningController extends Subject{
             feed = false;
             feed(data);
         }
-        while (networkTreeMap.entrySet().size() > 50) {
+        var entrySet = networkTreeMap.entrySet();
+        var entryArray = entrySet.toArray(new Map.Entry[entrySet.size()]);
+        while (entrySet.size() > CALCULATIONS_PER_ROUND/2) {
+
             networkTreeMap.pollFirstEntry();
         }
+        /*
+        List<Integer> removeList = new LinkedList<>();
+        while (entrySet.size()-removeList.size() > CALCULATIONS_PER_ROUND/2) {
+            int index = rdm.nextInt(entrySet.size());
+            float w = 1f/index;
+            if(rdm.nextFloat() > w && !removeList.contains(index))
+            {
+                removeList.add(index);
+            }
+            networkTreeMap.pollFirstEntry();
+        }
+        for (var index :
+                removeList) {
+            float key = (float) entryArray[index-1].getKey();
+            networkTreeMap.remove(key);
+        }
+        */
         Map<Float, Network> newTreeMap = Collections.synchronizedMap(new HashMap<>());
         Set<Map.Entry<Float, Network>> set = networkTreeMap.entrySet();
         Stream<Map.Entry<Float, Network>> stream = set.parallelStream();
@@ -131,12 +153,12 @@ public class LearningController extends Subject{
         networkTreeMap.putAll(newTreeMap);
         result = networkTreeMap.lastEntry().getValue();
         counter++;
-        if(counter>1000 && networkTreeMap.lastEntry().getKey()<282f) {
+        if(counter>1000 && networkTreeMap.lastEntry().getKey()<100f) {
             restart();
             counter = 0;
         }
 
-        if(counter>10000000){
+        if(counter>250000){
             try (PrintWriter out = new PrintWriter(new FileWriter("savefiles/good"+networkTreeMap.lastEntry().getKey()+".json"))) {
                 out.write(getResult().toJSONString());
             } catch (Exception e2) {

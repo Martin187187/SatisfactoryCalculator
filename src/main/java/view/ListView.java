@@ -60,8 +60,8 @@ public class ListView extends JFrame implements Observer {
             //var usedRawItems = network.calculateResourceConsumption(pair, new HashMap<>(), new HashMap<>());
             var usedRawItems = network.hasToProduceRawResources(
                     List.of(
-                            new ImmutablePair<>(l.getKey().getItem(), 1f*l.getValue())),
-                    new HashMap<>(), new HashMap<>());
+                            new ImmutablePair<>(l.getKey().getItem(), 1f*l.getValue()))
+                    ,new HashMap<>(), new HashMap<>());
 
 
             data[xcounter][0] = pair.getKey().getName()+": "+pair.getValue();

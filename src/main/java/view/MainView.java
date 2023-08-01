@@ -109,7 +109,7 @@ public class MainView extends JFrame implements Observer{
                 if(e.getKeyCode() == KeyEvent.VK_S){
 
 
-                    try (PrintWriter out = new PrintWriter(new FileWriter("savefiles/test2.json"))) {
+                    try (PrintWriter out = new PrintWriter(new FileWriter("savefiles/test.json"))) {
                         out.write(controller.getResult().toJSONString());
                     } catch (Exception e2) {
                         e2.printStackTrace();

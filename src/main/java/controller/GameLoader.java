@@ -37,7 +37,7 @@ public class GameLoader {
     public GameLoader(String filepath){
 
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(filepath).getPath());
+        File file = new File(Objects.requireNonNull(classLoader.getResource(filepath)).getPath());
 
         StringBuilder sb = new StringBuilder();
         try {

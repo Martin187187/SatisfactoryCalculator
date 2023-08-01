@@ -17,12 +17,13 @@ public class CalculateTest {
         controller.attach(mainView);
         Observer listview = new ListView(controller, dataController);
         controller.attach(listview);
-        /*
         while(true){
             controller.calculate();
         }
+
+
         
-         */
+
 
 
     }

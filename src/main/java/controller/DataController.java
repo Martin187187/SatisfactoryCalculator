@@ -22,7 +22,7 @@ public class DataController {
     private List<Recipe> recipeList;
 
     public DataController() {
-        loader = new GameLoader("update4.json");
+        loader = new GameLoader("update7.json");
         itemList = loader.getItemList();
         recipeList = loader.getRecipeList();
 
@@ -93,6 +93,13 @@ public class DataController {
                     }
                     r.setIngredients(newIngredientList);
                     r.setProducts(newProductList);
+                    newList.add(r);
+                    break;
+
+                case "Recipe_GasTank_C":
+                    r.setIngredients(new LinkedList<>());
+                    newList.add(r);
+                    break;
                 default:
                     newList.add(r);
                     break;
@@ -171,7 +178,7 @@ public class DataController {
                     result.put(item, 10500f);
                     break;
                 case "Desc_Sulfur_C":
-                    result.put(item, 8040f);
+                    result.put(item, 6840f);
                     break;
                 case "Desc_OreBauxite_C":
                     result.put(item, 9780f);
@@ -195,6 +202,9 @@ public class DataController {
                     result.put(item, 12000000f);
                     break;
                 case "Desc_FluidCanister_C":
+                    result.put(item, 1000000000f);
+                    break;
+                case "Desc_GasTank_C":
                     result.put(item, 1000000000f);
                     break;
 

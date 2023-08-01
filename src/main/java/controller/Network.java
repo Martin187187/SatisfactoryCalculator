@@ -252,7 +252,7 @@ public class Network implements JSONString {
                 }
                 weightList2.add(newWeight);
             }
-            NetworkNode newNode = new NetworkNode(node.getItem(), node.getRecipeList(), rdm.nextFloat()<0.1f ? weightList2 : node.getWeightList());
+            NetworkNode newNode = new NetworkNode(node.getItem(), node.getRecipeList(), rdm.nextFloat()<0.25f ? weightList2 : node.getWeightList());
             nodeList.add(newNode);
         }
         return new Network(nodeList);
