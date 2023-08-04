@@ -1,19 +1,13 @@
 package view;
 
 import controller.LearningController;
-import controller.Network;
 import model.Item;
 import model.NetworkNode;
 import model.Recipe;
 import org.graphstream.graph.Node;
 
 import javax.swing.*;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 

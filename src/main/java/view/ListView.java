@@ -2,10 +2,9 @@ package view;
 
 import controller.DataController;
 import controller.LearningController;
-import controller.Network;
+import model.Network;
 import controller.Subject;
 import model.Item;
-import model.NetworkNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -13,12 +12,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ListView extends JFrame implements Observer {
 

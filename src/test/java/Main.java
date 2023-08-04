@@ -25,7 +25,6 @@ public class Main {
         System.out.println(controller.getListOfRecipesProducts(item3).get(2).getIngredients());
 //Recipe_Alternate_Plastic_1_C
 //Recipe_Alternate_RecycledRubber_C
-        /*
         Item sc = itemList.stream().filter(x -> x.getClassName().equals("Desc_ModularFrameHeavy_C")).findFirst().get();
         printData(sc, controller);
 
@@ -39,7 +38,7 @@ public class Main {
             System.out.println(value);
             System.out.println(result.getKey());
         }
-         */
+
 
 
     }

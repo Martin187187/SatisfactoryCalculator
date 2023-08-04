@@ -1,7 +1,7 @@
 package controller;
 
 import model.Item;
-import model.NetworkNode;
+import model.Network;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class LearningController extends Subject{
 
