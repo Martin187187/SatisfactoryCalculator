@@ -17,7 +17,7 @@ public class TestNodeRecipe {
         Item water = itemList.stream().filter(x -> x.getClassName().equals("Desc_Water_C")).findFirst().get();
         water.setSinkPoints(0);
 
-        Item item = new Item("Desc_Silica_C", null, null, 1);
+        Item item = new Item("Desc_IronRod_C", null, null, 1);
 
         Recipe root = new Recipe("nan", "root", 0, null);
         root.addIngredient(item, 1f);

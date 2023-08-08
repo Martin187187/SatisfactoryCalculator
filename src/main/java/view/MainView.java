@@ -1,7 +1,6 @@
 package view;
 
 import controller.LearningController;
-import controller.Network;
 import controller.Subject;
 import model.Item;
 import model.NetworkNode;
@@ -11,25 +10,17 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.layout.Eades84Layout;
-import org.graphstream.ui.layout.HierarchicalLayout;
 import org.graphstream.ui.layout.Layout;
-import org.graphstream.ui.layout.springbox.implementations.LinLog;
 import org.graphstream.ui.layout.springbox.implementations.SpringBox;
 import org.graphstream.ui.swingViewer.View;
 import org.graphstream.ui.swingViewer.Viewer;
-import org.graphstream.ui.swingViewer.ViewerListener;
 import org.graphstream.ui.swingViewer.ViewerPipe;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.*;
-import java.security.Key;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

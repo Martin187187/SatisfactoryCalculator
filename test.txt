@@ -1,0 +1,121 @@
+@startuml
+
+class model.Building {
+	{field} -description : String
+	{field} -manufacturingSpeed : float
+	{field} -powerConsumption : float
+	{field} -powerConsumptionExponent : float
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toJSONString () : String
+	{method} +toString () : String
+}
+
+
+abstract class model.Entity {
+	{field} #className : String
+	{field} #name : String
+}
+
+
+class model.Item {
+	{field} -description : String
+	{field} +sinkPoints : float
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +isRawMaterial () : boolean
+	{method} +toJSONString () : String
+	{method} +toString () : String
+}
+
+
+class model.Item$AmountOfItems {
+	{field} -amount : int
+	{method} +toString () : String
+}
+
+
+class model.Network {
+	{field} -amountUsedMap : java.util.Map
+	{method} +calculateResourceConsumption ( paramPair1 : org.apache.commons.lang3.tuple.Pair , paramMap2 : java.util.Map , paramMap3 : java.util.Map ) : java.util.Map
+	{method} +calculateValue ( paramList1 : java.util.List , paramList2 : java.util.List , paramMap3 : java.util.Map , paramboolean4 : boolean ) : float
+	{method} +clone () : model.Network
+	{method} +clone () : Object
+	{method} +createNewNode () : model.Network
+	{method} -findItemInList ( paramItem1 : model.Item , paramList2 : java.util.List ) : model.NetworkNode
+	{method} +findItemInNetwork ( paramItem1 : model.Item ) : model.NetworkNode
+	{method} +getUsedRecipes () : java.util.List
+	{method} +hasToProduceRawResources ( paramList1 : java.util.List , paramMap2 : java.util.Map , paramMap3 : java.util.Map ) : java.util.Map
+	{method} +toJSONString () : String
+	{method} +toString () : String
+}
+
+
+class model.NetworkNode {
+	{field} +weightList : java.util.List
+	{method} +addRecipe ( paramRecipe1 : model.Recipe ) : void
+	{method} +addWeight ( paramFloat1 : Float ) : void
+	{method} +calculateWeights () : void
+	{method} +clone () : model.NetworkNode
+	{method} +clone () : Object
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +toJSONString () : String
+	{method} +toString () : String
+}
+
+
+class model.NodeItem {
+	{method} +addLeaf ( paramNodeItem1 : model.NodeItem ) : void
+	{method} +isNewElement () : boolean
+	{method} -print ( paramStringBuilder1 : StringBuilder , paramString2 : String , paramString3 : String ) : void
+	{method} +toString () : String
+}
+
+
+class model.NodeRecipe {
+	{field} ~item : org.apache.commons.lang3.tuple.Pair
+	{method} +addLeaf ( paramNodeRecipe1 : model.NodeRecipe ) : void
+	{method} +clone () : Object
+	{method} +clone () : model.NodeRecipe
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +getRoot () : model.NodeRecipe
+	{method} +hashCode () : int
+	{method} +isNewNode () : boolean
+	{method} -print ( paramStringBuilder1 : StringBuilder , paramString2 : String , paramString3 : String ) : void
+	{method} +toString () : String
+}
+
+
+class model.Recipe {
+	{field} -duration : float
+	{field} +ingredients : java.util.List
+	{field} +products : java.util.List
+	{method} +addIngredient ( paramItem1 : model.Item , paramFloat2 : Float ) : void
+	{method} +addProduct ( paramItem1 : model.Item , paramFloat2 : Float ) : void
+	{method} +isRawMaterial () : boolean
+	{method} +scaleToProduct ( paramItem1 : model.Item ) : float
+	{method} +toJSONString () : String
+	{method} +toString () : String
+}
+
+
+
+
+model.Building --|>  model.Entity
+model.Item --|>  model.Entity
+model.Item$AmountOfItems -->  model.Item : item
+model.Network "1" o-- "0..*"  model.NetworkNode : networkNodeList
+model.NetworkNode "1" o-- "0..*"  model.Recipe : recipeList
+model.NetworkNode -->  model.Item : item
+model.NodeItem "1" o-- "0..*"  model.NodeItem : leafList
+model.NodeItem -->  model.Item : item
+model.NodeItem -->  model.NodeItem : parent
+model.NodeRecipe "1" o-- "0..*"  model.NodeRecipe : leafList
+model.NodeRecipe -->  model.NodeRecipe : parent
+model.NodeRecipe -->  model.Recipe : recipe
+model.Recipe -->  model.Building : producedIn
+model.Recipe --|>  model.Entity
+
+
+@enduml
+

@@ -1,16 +1,12 @@
 package view;
 
 import controller.LearningController;
-import controller.Network;
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.swingViewer.View;
-import org.graphstream.ui.swingViewer.Viewer;
 import org.graphstream.ui.swingViewer.ViewerListener;
 import org.graphstream.ui.swingViewer.ViewerPipe;
 
-import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.event.MouseEvent;
 
